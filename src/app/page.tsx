@@ -13,7 +13,7 @@ export default async function Home() {
   return (
     <HydrateClient>
       <main >
-        
+        Меня зовут Игнат
 
             <div className="flex flex-col items-center justify-center gap-4">
               <p className="text-center text-xs text-white">
