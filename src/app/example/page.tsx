@@ -9,7 +9,7 @@ export default function ExamplePage() {
       { name: res?.name ?? "", url: res?.url ?? "", galleryId: 2 },
       {
         onSuccess: () => {
-          refetch();
+          void refetch();
         },
       },
     );
@@ -34,6 +34,7 @@ export default function ExamplePage() {
         {photoData?.map((photo) => (
           <img
             className="col-span-2 md:h-full md:w-full"
+            key={photo.id}
             src={photo.url ?? ""}
           />
         ))}
