@@ -9,6 +9,7 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { url } from "inspector";
 import { type AdapterAccount } from "next-auth/adapters";
 
 /**
@@ -39,8 +40,46 @@ export const posts = createTable(
     nameIndex: index("name_idx").on(example.name),
   })
 );
+ 
+export const photos = createTable("photos", {
+  id: serial ("id").primaryKey(),
+  name: varchar("name", { length: 256 }), 
+  url: varchar("url", { length: 256 }),
+  galleryId: integer("gallery_id").notNull().references(() => gallery.id),
+  createdById: varchar("created_by", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+    () => new Date()
+  ),
+});
 
-export const users = createTable("user", {
+export const gallery = createTable("gallery", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 256 }),
+  createdById: varchar("created_by", { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+    () => new Date()
+  ),
+});
+
+export const photosRelations = relations(photos, ({ one }) => ({
+  gallery: one(gallery, { fields: [photos.galleryId], references: [gallery.id] }),
+}));
+
+export const galleryRelations = relations(gallery, ({ many }) => ({
+  photos: many(photos),
+}));
+
+  export const users = createTable("user", {
   id: varchar("id", { length: 255 })
     .notNull()
     .primaryKey()
